@@ -50,7 +50,7 @@ abstract class BaseEndpoint
      */
     public function find($id)
     {
-        $this->buildUrl('/'.$id);
+        $this->buildUrl('/' . $id);
 
         return $this->getUrl();
     }
@@ -62,10 +62,10 @@ abstract class BaseEndpoint
     {
         $path = $this->replaceVarsInPath();
 
-        $fullPath = $this->apiV2Url.$path.$subPath;
+        $fullPath = $this->apiV2Url . $path . $subPath;
         $params = $this->getUrlParams();
 
-        $this->url = $fullPath.$params;
+        $this->url = $fullPath . $params;
     }
 
     /**
@@ -83,7 +83,7 @@ abstract class BaseEndpoint
      */
     public function getUrlParams()
     {
-        return count($this->params) ? '?'.http_build_query($this->params) : '';
+        return count($this->params) ? '?' . http_build_query($this->params) : '';
     }
 
     /**
@@ -117,10 +117,22 @@ abstract class BaseEndpoint
     {
         $tmpPath = $this->getPath();
 
-        if (! $this->baseId || ! str_contains($tmpPath, '{')) {
+        if (!$this->baseId || !str_contains($tmpPath, '{')) {
             return $tmpPath;
         }
 
         return preg_replace('/\{.*\}/', $this->baseId, $tmpPath);
+    }
+
+    /**
+     * @param $dateTime
+     */
+    public function updatedSince($dateTime)
+    {
+        if (!$dateTime instanceof Carbon) {
+            $dateTime = Carbon::parse($dateTime);
+        }
+
+        $this->params += ['updated_since' => $dateTime->toIso8601ZuluString()];
     }
 }
